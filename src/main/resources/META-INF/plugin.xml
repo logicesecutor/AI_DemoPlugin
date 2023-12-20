@@ -39,7 +39,6 @@
   </extensions>
 
   <actions>
-
     <action id="org.intellij.sdk.toolWindow.CodeCaptureAction" class="org.intellij.sdk.actions.CodeCaptureAction"
             text="AI Generate Tool: Capture Code" description="Capture the selected Code to generate documentation">>
       <add-to-group group-id="EditorPopupMenu" anchor="first"/>

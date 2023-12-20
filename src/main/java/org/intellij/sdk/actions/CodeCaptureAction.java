@@ -9,10 +9,11 @@ import com.intellij.openapi.project.DumbAwareAction;
 import org.intellij.sdk.toolWindow.AIDemoPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.Objects;
 
 public class CodeCaptureAction extends DumbAwareAction {
-    AIDemoPlugin aiDemoPlugin = AIDemoPlugin.getInstance();
+
 
     @Override
     public void update(@NotNull AnActionEvent event) {
@@ -39,14 +40,22 @@ public class CodeCaptureAction extends DumbAwareAction {
 
         System.out.println(Objects.requireNonNullElse(selectedText, "No text Selected"));
 
-
-
+        AIDemoPlugin aiDemoPlugin = AIDemoPlugin.getInstance();
         aiDemoPlugin.getGeneratedTextArea().setText(Objects.requireNonNullElse(selectedText, "No text Selected"));
+
+        /*SwingUtilities.invokeLater(() -> {
+            aiDemoPlugin.getGeneratedTextArea().setText(Objects.requireNonNullElse(selectedText, "No text Selected"));
+        });
+
+         */
+
     }
 
     /*@Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
+        aiDemoPlugin.getGeneratedTextArea().setText(Objects.requireNonNullElse(selectedText, "No text Selected"));
 
     }
     */
+
 }

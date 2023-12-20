@@ -2,6 +2,8 @@
 package org.intellij.sdk.toolWindow;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -53,110 +55,138 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     return instance;
   }
   public JBTextArea getGeneratedTextArea(){
-    return toolWindowContent.codeInsertionTextArea;
+    return toolWindowContent.getCodeInsertionTextArea();
   }
 
   private static class AIDemoPluginWindowContent {
     private final JPanel contentPanel;
+    private JBTextArea codeInsertionTextArea;
+    public static String API_KEY = "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";
+    public static String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-7b-hf";
 
-    public JBTextArea codeInsertionTextArea;
+    private static HttpClient httpClient;
 
-    HttpRequest httpRequest;
-    HttpClient httpClient;
-    RequestBodyObject rbo;
+    public JBTextArea getCodeInsertionTextArea() {
+      return codeInsertionTextArea;
+    }
 
+    public HttpRequest buildNewHttpRequest(String API_KEY, String API_URL, String json){
 
-
-    public AIDemoPluginWindowContent(ToolWindow toolWindow) {
-
-      String API_KEY = "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";
-      String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-7b-hf";
-
-      this.rbo = new RequestBodyObject();
-      this.rbo.setModelInput("Generate documentation for the following code: \"public JPanel getContentPanel() {return contentPanel;}\"");
-      Gson json = new Gson();
-
-      String str = json.toJson(rbo);
-
-      this.httpClient = HttpClient.newHttpClient();
-      this.httpRequest = HttpRequest.newBuilder()
+      return HttpRequest.newBuilder()
               .uri(URI.create(API_URL))
               .timeout(Duration.ofMinutes(2))
               .header("Content-Type", "application/json")
               .header("Authorization", "Bearer "+ API_KEY)
-              //.POST(HttpRequest.BodyPublishers.ofString("{\"inputs\":\"Generate documentation for the following code public JPanel getContentPanel() {return contentPanel;}\"}"))
-              .POST(HttpRequest.BodyPublishers.ofString(str))
+              .POST(HttpRequest.BodyPublishers.ofString(json))
               .build();
+    }
 
+    public AIDemoPluginWindowContent(ToolWindow toolWindow) {
+
+      httpClient = HttpClient.newHttpClient();
 
       this.contentPanel = new JPanel();
       contentPanel.setLayout(new BorderLayout(50, 20));
 
       contentPanel.add(createControlsPanel(toolWindow), BorderLayout.CENTER);
-
     }
+
 
     @NotNull
     private JPanel createControlsPanel(ToolWindow toolWindow) {
 
       JPanel controlsPanel = new JPanel( new GridLayout(3, 1) );
 
-
       // CodeInsertion Text Area
       //EditorTextField codeInsertionTextArea = new EditorTextField();
       codeInsertionTextArea = new JBTextArea();
-      // Put a placeHolder
+      // Put a placeHolder for the codeInsertionTextArea
       codeInsertionTextArea.getEmptyText().setText("Insert here your code");
-      // Set some default dimensions
-      //codeInsertionTextArea.setPreferredSize( new Dimension( 200, 300 ) );
 
       // Add a scroller for the CodeInsertion Area
-      JScrollPane scroller_codeInsertionTextArea = new JScrollPane(codeInsertionTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      JBScrollPane scroller_codeInsertionTextArea = new JBScrollPane(codeInsertionTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
+      // Generated Text Area
       JBTextArea generatedTextArea = new JBTextArea();
+      // Put a placeHolder for the generatedTextArea
       generatedTextArea.getEmptyText().setText("Waiting for the Generated documentation");
-      //generatedTextArea.setPreferredSize( new Dimension( 200, 300 ) );
 
-      JScrollPane scroller_generatedTextArea = new JScrollPane(generatedTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-      JButton generateTextButton = getGenerationButton(controlsPanel, generatedTextArea);
+
+      JBScrollPane scroller_generatedTextArea = new JBScrollPane(generatedTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      JButton generateTextButton = getGenerationButton(codeInsertionTextArea, generatedTextArea);
 
       controlsPanel.add(scroller_codeInsertionTextArea,0);
-      //controlsPanel.add(codeInsertionTextArea);
       controlsPanel.add(generateTextButton,1);
       controlsPanel.add(scroller_generatedTextArea,2);
 
-
       return controlsPanel;
-
     }
 
 
     @NotNull
-    private JButton getGenerationButton(JPanel controlsPanel, JBTextArea generatedTextArea) {
+    private JButton getGenerationButton(JBTextArea codeInsertionTextArea, JBTextArea generatedTextArea) {
 
       // Add Generation Button
       JButton generateTextButton = new JButton("Generate Documentation");
       generateTextButton.addActionListener((event) ->
       {
-        // Lambda function that call a callback to the LLM model API
-        System.out.println("Generation Event: Async POST submitted!\n");
+        if (!codeInsertionTextArea.getText().isEmpty()) {
+          // Lambda function that call a callback to the LLM model API
+          System.out.println("Generation Event: Async POST submitted!\n");
 
-        this.httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(string -> {
-                  string = string.replace("[", "");
-                  string = string.replace("]", "");
+          HttpRequest request = buildNewHttpRequest(
+                  API_KEY,
+                  API_URL,
+                  new RequestBodyObject("Generate documentation for the following code:" +
+                          "%s".formatted(codeInsertionTextArea.getText())).toJson()
+          );
 
-                  ResponseBodyObject obj = new Gson().fromJson(string, ResponseBodyObject.class);
-                  System.out.println(string);
-                });
+          /*CompletableFuture<HttpResponse<String>> response = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+          CompletableFuture<Integer> responseCode = response.thenApply(HttpResponse::statusCode);
+
+
+          response.thenApply(HttpResponse::body)
+                  .thenAccept(string -> {
+                      try {
+                          Integer res = responseCode.get();
+                          if(res >= 200 && res<=299) {
+                            string = string.replace("[", "");
+                            string = string.replace("]", "");
+                            System.out.println(string);
+
+                            ResponseBodyObject obj = new Gson().fromJson(string, ResponseBodyObject.class);
+                            SwingUtilities.invokeLater(() -> generatedTextArea.setText(obj.generated_text));
+                          }
+                          else{
+                            SwingUtilities.invokeLater(() -> generatedTextArea.setText("Bad request"));
+                          }
+
+                      } catch (InterruptedException | ExecutionException e) {
+                        SwingUtilities.invokeLater(() -> generatedTextArea.setText(e.toString()));
+                      }
+
+                  });
+                  */
+
+          httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                  .thenApply(HttpResponse::body)
+                  .thenAccept(string -> {
+                    string = string.replace("[", "");
+                    string = string.replace("]", "");
+
+                    System.out.println(string);
+
+                    ResponseBodyObject obj = new Gson().fromJson(string, ResponseBodyObject.class);
+                    SwingUtilities.invokeLater(() -> generatedTextArea.setText(obj.generated_text));
+
+                  });
+
+        }else{
+          SwingUtilities.invokeLater(() -> generatedTextArea.setText("No The string was Empty"));
+        }
       });
 
       return generateTextButton;
-    }
-
-    public void updateGeneratedTextArea(String newText){
-
     }
 
     public JPanel getContentPanel() {
