@@ -34,13 +34,16 @@ public class CodeCaptureAction extends DumbAwareAction {
     public void actionPerformed(@NotNull AnActionEvent event) {
         // Using the event, implement an action.
         // For example, create and show a dialog.
+        AIDemoPlugin aiDemoPlugin = AIDemoPlugin.getInstance();
+        if(aiDemoPlugin == null) return;
+
+
         Editor ediTorRequiredData = event.getRequiredData(CommonDataKeys.EDITOR);
         CaretModel caretModel = ediTorRequiredData.getCaretModel();
         String selectedText = caretModel.getCurrentCaret().getSelectedText();
 
         System.out.println(Objects.requireNonNullElse(selectedText, "No text Selected"));
 
-        AIDemoPlugin aiDemoPlugin = AIDemoPlugin.getInstance();
         aiDemoPlugin.getGeneratedTextArea().setText(Objects.requireNonNullElse(selectedText, "No text Selected"));
 
         /*SwingUtilities.invokeLater(() -> {

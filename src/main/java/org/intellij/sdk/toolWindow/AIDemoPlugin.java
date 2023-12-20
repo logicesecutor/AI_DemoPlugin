@@ -1,35 +1,27 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.sdk.toolWindow;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.ui.EditorTextField;
-import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.components.*;
 import com.intellij.ui.content.Content;
 import com.google.gson.Gson;
 
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpClient;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.ui.AnimatedIcon;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
 
 
 public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
@@ -43,11 +35,15 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     toolWindowContent = new AIDemoPluginWindowContent(toolWindow);
 
     ContentManager contentManager = toolWindow.getContentManager();
-    Content codeGenerationTab = contentManager.getFactory().createContent(toolWindowContent.getContentPanel(), "Code Generation", false);
+    Content codeGenerationTab = contentManager.getFactory().createContent(toolWindowContent.getGenerationContentPanel(), "Code Generation", false);
     contentManager.addContent(codeGenerationTab);
 
-    //Content dataVisualizerTab = contentManager.getFactory().createContent(toolWindowContent.getContentPanel(), "Data Visualizer", false);
-    //contentManager.addContent(dataVisualizerTab);
+    /*Content dataVisualizerTab = contentManager.getFactory().createContent(toolWindowContent.getDataVisualizerContentPanel(), "Data Visualizer", false);
+    contentManager.addContent(dataVisualizerTab);
+     */
+
+    Content feedbackPane = contentManager.getFactory().createContent(toolWindowContent.getFeedbackContentPanel(), "Data Visualizer", false);
+    contentManager.addContent(feedbackPane);
 
   }
 
@@ -59,8 +55,11 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
   }
 
   private static class AIDemoPluginWindowContent {
-    private final JPanel contentPanel;
-    private JBTextArea codeInsertionTextArea;
+    private final JPanel generationContentPanel;
+    private final JPanel feedbackContentPanel;
+    //private final JPanel dataVisualizerContentPanel;
+    private static JBTextArea codeInsertionTextArea;
+    private static JBTextArea generatedTextArea;
     public static String API_KEY = "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";
     public static String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-7b-hf";
 
@@ -85,49 +84,72 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
       httpClient = HttpClient.newHttpClient();
 
-      this.contentPanel = new JPanel();
-      contentPanel.setLayout(new BorderLayout(50, 20));
-
-      contentPanel.add(createControlsPanel(toolWindow), BorderLayout.CENTER);
-    }
-
-
-    @NotNull
-    private JPanel createControlsPanel(ToolWindow toolWindow) {
-
-      JPanel controlsPanel = new JPanel( new GridLayout(3, 1) );
-
       // CodeInsertion Text Area
-      //EditorTextField codeInsertionTextArea = new EditorTextField();
       codeInsertionTextArea = new JBTextArea();
       // Put a placeHolder for the codeInsertionTextArea
       codeInsertionTextArea.getEmptyText().setText("Insert here your code");
-
-      // Add a scroller for the CodeInsertion Area
-      JBScrollPane scroller_codeInsertionTextArea = new JBScrollPane(codeInsertionTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      codeInsertionTextArea.setPreferredSize(new Dimension(400, 200));
 
       // Generated Text Area
-      JBTextArea generatedTextArea = new JBTextArea();
+      generatedTextArea = new JBTextArea();
       // Put a placeHolder for the generatedTextArea
-      generatedTextArea.getEmptyText().setText("Waiting for the Generated documentation");
+      generatedTextArea.getEmptyText().setText("Waiting for to Generation input");
+      generatedTextArea.setPreferredSize(new Dimension(400, 200));
+
+      generationContentPanel = new JPanel();
+      generationContentPanel.setLayout(new BorderLayout(50, 20));
+      generationContentPanel.add(createGenerationControlsPanel(toolWindow), BorderLayout.CENTER);
+
+      feedbackContentPanel = new JPanel();
+      feedbackContentPanel.setLayout(new BorderLayout(50, 20));
+      feedbackContentPanel.add(createFeedbackControlsPanel(toolWindow), BorderLayout.CENTER);
 
 
-      JBScrollPane scroller_generatedTextArea = new JBScrollPane(generatedTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-      JButton generateTextButton = getGenerationButton(codeInsertionTextArea, generatedTextArea);
 
-      controlsPanel.add(scroller_codeInsertionTextArea,0);
-      controlsPanel.add(generateTextButton,1);
-      controlsPanel.add(scroller_generatedTextArea,2);
+
+
+      /*
+      dataVisualizerContentPanel = new JPanel();
+      dataVisualizerContentPanel.setLayout(new BorderLayout(50, 20));
+      dataVisualizerContentPanel.add(createDataVisualizerControlsPanel(toolWindow), BorderLayout.CENTER);
+       */
+    }
+
+
+
+    @NotNull
+    private JPanel createGenerationControlsPanel(ToolWindow toolWindow) {
+
+      JPanel controlsPanel = new JPanel( new BorderLayout());
+
+      JPanel labeledTextArea = createLabeledComponent(codeInsertionTextArea, "Insert Here the code:");
+      // Add a scroller for the CodeInsertion Area
+      JBScrollPane scroller_codeInsertionTextArea = new JBScrollPane(labeledTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+      JButton generateTextButton = getGenerationButton(toolWindow, codeInsertionTextArea, generatedTextArea);
+      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      buttonPanel.add(generateTextButton);
+
+      controlsPanel.add(scroller_codeInsertionTextArea,BorderLayout.CENTER);
+      controlsPanel.add(buttonPanel, BorderLayout.SOUTH);
 
       return controlsPanel;
     }
 
+    private JPanel createLabeledComponent(JComponent component, String label){
+      JPanel labeledTextArea = new JPanel(new BorderLayout(10,10));
+      labeledTextArea.add(new JBLabel(label), BorderLayout.NORTH);
+      labeledTextArea.add(component, BorderLayout.CENTER);
+
+      return labeledTextArea;
+    }
 
     @NotNull
-    private JButton getGenerationButton(JBTextArea codeInsertionTextArea, JBTextArea generatedTextArea) {
+    private JButton getGenerationButton(ToolWindow toolWindow, JBTextArea codeInsertionTextArea, JBTextArea generatedTextArea) {
 
       // Add Generation Button
       JButton generateTextButton = new JButton("Generate Documentation");
+
       generateTextButton.addActionListener((event) ->
       {
         if (!codeInsertionTextArea.getText().isEmpty()) {
@@ -141,33 +163,6 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
                           "%s".formatted(codeInsertionTextArea.getText())).toJson()
           );
 
-          /*CompletableFuture<HttpResponse<String>> response = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-          CompletableFuture<Integer> responseCode = response.thenApply(HttpResponse::statusCode);
-
-
-          response.thenApply(HttpResponse::body)
-                  .thenAccept(string -> {
-                      try {
-                          Integer res = responseCode.get();
-                          if(res >= 200 && res<=299) {
-                            string = string.replace("[", "");
-                            string = string.replace("]", "");
-                            System.out.println(string);
-
-                            ResponseBodyObject obj = new Gson().fromJson(string, ResponseBodyObject.class);
-                            SwingUtilities.invokeLater(() -> generatedTextArea.setText(obj.generated_text));
-                          }
-                          else{
-                            SwingUtilities.invokeLater(() -> generatedTextArea.setText("Bad request"));
-                          }
-
-                      } catch (InterruptedException | ExecutionException e) {
-                        SwingUtilities.invokeLater(() -> generatedTextArea.setText(e.toString()));
-                      }
-
-                  });
-                  */
-
           httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                   .thenApply(HttpResponse::body)
                   .thenAccept(string -> {
@@ -177,7 +172,10 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
                     System.out.println(string);
 
                     ResponseBodyObject obj = new Gson().fromJson(string, ResponseBodyObject.class);
-                    SwingUtilities.invokeLater(() -> generatedTextArea.setText(obj.generated_text));
+                    SwingUtilities.invokeLater(() -> {
+                      generatedTextArea.setText(obj.generated_text);
+                      toolWindow.getContentManager().setSelectedContent(toolWindow.getContentManager().findContent("Data Visualizer"));
+                    });
 
                   });
 
@@ -189,9 +187,95 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       return generateTextButton;
     }
 
-    public JPanel getContentPanel() {
-      return contentPanel;
+
+    private JPanel createFeedbackControlsPanel(ToolWindow toolWindow) {
+
+      JPanel controlsPanel = new JPanel( new BorderLayout() );
+      //GridBagConstraints constraints = new GridBagConstraints();
+      //constraints.fill = GridBagConstraints.HORIZONTAL;
+
+      JPanel labeledGeneratedTextArea = createLabeledComponent(generatedTextArea, "Model output:");
+      JBScrollPane scroller_generatedTextArea = new JBScrollPane(labeledGeneratedTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      //scroller_generatedTextArea.setPreferredSize(new Dimension(400, 200));
+
+
+      JButton submitButton = new JButton("Submit");
+
+
+      controlsPanel.add(scroller_generatedTextArea, BorderLayout.CENTER);
+      controlsPanel.add(submitButton, BorderLayout.SOUTH);
+
+      return controlsPanel;
+
+      /*constraints.gridx = 0;
+      constraints.gridy = 0;
+      constraints.gridwidth = 6;
+      controlsPanel.add(scroller_generatedTextArea, constraints);
+
+      ArrayList<JBCheckBox> checkBoxes = new ArrayList<>();
+      // Checkbox
+      for (int i = 0; i < 5; i++) {
+        JBCheckBox checkBox = new JBCheckBox("Checkbox " + (i + 1));
+        constraints.gridx = i;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        controlsPanel.add(checkBox, constraints);
+        checkBoxes.add(checkBox);
+      }
+
+      // TextArea
+      JBTextArea feedBackTextArea = new JBTextArea();
+      feedBackTextArea.getEmptyText().setText("Give us your Feedback");
+      JBScrollPane scrollPane = new JBScrollPane(feedBackTextArea);
+      scrollPane.setPreferredSize(new Dimension(200, 100));
+      constraints.gridx = 0;
+      constraints.gridy = 2;
+      constraints.gridwidth = 5;
+      constraints.ipady = 80; // set the height of the scroll pane
+      controlsPanel.add(scrollPane, constraints);
+
+      // Dropdown List
+      String[] options = {"Option 1", "Option 2", "Option 3"};
+      JBList<String> dropdownList = new JBList<>(options);
+
+
+      // ScrollPane for the Dropdown List
+      JBScrollPane listScrollPane = new JBScrollPane(dropdownList);
+      listScrollPane.setPreferredSize(new Dimension(150, 100));
+
+      constraints.gridx = 0;
+      constraints.gridy = 3;
+      constraints.gridwidth = 5;
+      controlsPanel.add(listScrollPane, constraints);
+
+
+
+      constraints.gridx = 2; // Centered horizontally
+      constraints.gridy = 4; // Bottom row
+      constraints.gridwidth = 1;
+      constraints.ipady = 0; // Reset to default
+      constraints.insets = JBUI.insetsTop(10); // Add some top margin
+       */
+
+
+
+
     }
 
+    private JPanel createDataVisualizerControlsPanel(ToolWindow toolWindow) {
+      return new JPanel();
+    }
+
+    public JPanel getGenerationContentPanel() {
+      return generationContentPanel;
+    }
+
+    public JPanel getFeedbackContentPanel() {
+      return feedbackContentPanel;
+    }
+
+    public JPanel getDataVisualizerContentPanel() {
+      return new JPanel();
+    }
   }
 }
