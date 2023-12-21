@@ -10,6 +10,8 @@ Moreover, the User can give some feedback to improve the quality of generated te
 2. Open the project with IntelliJ IDEA. Gradle should automatically build the plugin and install the needed dependencies.
 3. Run the Gradle configuration "build plugin". During this step, the file "AIDemoPlugin-2.0.0.zip" will be generated under the folder build -> distribution.
 
+In this repo, you can already find the "AIDemoPlugin-2.0.0.zip" installable file.
+
 To immediately try the plugin run "runPlugin" in the run box.
 
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin" width="400"/>
