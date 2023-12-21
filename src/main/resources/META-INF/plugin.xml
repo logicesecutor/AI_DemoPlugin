@@ -23,8 +23,7 @@
   <change-notes>
     <![CDATA[
       <ul>
-        <li><b>2.0.0</b> Convert to Gradle-based plugin.</li>
-        <li><b>1.0.0</b> Release 2018.3 and earlier.</li>
+        <li><b>1.0.0</b> Release 2023.3 and earlier.</li>
       </ul>
     ]]>
   </change-notes>
@@ -33,7 +32,7 @@
   <vendor url="https://github.com/logicesecutor/AI_DemoPlugin">LogicEsecutor GitHub</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="Demo Plugins" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
+    <toolWindow id="Demo Plugins" secondary="true" icon="AllIcons.Debugger.Db_primitive" anchor="right"
                 factoryClass="org.intellij.sdk.AIDemoPlugin.AIDemoPlugin"/>
   </extensions>
 

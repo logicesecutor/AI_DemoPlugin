@@ -84,7 +84,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
       API_KEY = currConfigProperties.getProperty("API_KEY");
       API_URL = currConfigProperties.getProperty("API_URL");
-      userDataPath = currConfigProperties.getProperty("USER_DATA_PATH");
+      userDataPath = currConfigProperties.getProperty("PROJECT_DATA_PATH") + "AIDocGenerator/src/main/resources/toolWindow/userData.json";
 
       httpClient = HttpClient.newHttpClient();
 
