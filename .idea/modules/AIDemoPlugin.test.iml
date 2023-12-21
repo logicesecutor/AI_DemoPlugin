@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="AIDemoPlugin:test" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.intellij.sdk" external.system.module.type="sourceSet" external.system.module.version="2.0.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output-test url="file://$MODULE_DIR$/../../build/classes/java/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../src/test" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="AIDemoPlugin.main" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:24.0.1" level="project" />
+    <orderEntry type="module-library">
+      <library name="Gradle: com.jetbrains:ideaIC:2023.1.5">
+        <ANNOTATIONS>
+          <root url="jar://$MAVEN_REPOSITORY$/com/jetbrains/intellij/idea/ideaIU/2023.3.1/ideaIU-2023.3.1-annotations.zip!/" />
+        </ANNOTATIONS>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/ant/lib/ant.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/3rd-party-rt.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/app.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/byte-buddy-agent.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/error-prone-annotations.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/external-system-rt.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/externalProcess-rt.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/forms_rt.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/groovy.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/idea_rt.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/intellij-coverage-agent-1.0.706.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/intellij-test-discovery.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/jps-model.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/jsch-agent.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/junit4.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/protobuf.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/rd.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/stats.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/testFramework.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/util.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/util-8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../JetBrains/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2023.1.5/2d48b199b6b41ad2dd415ed933e95a3ca8d3979/ideaIC-2023.1.5/lib/util_rt.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+  <component name="TestModuleProperties" production-module="AIDemoPlugin.main" />
+</module>
