@@ -1,4 +1,4 @@
-package org.intellij.sdk.toolWindow;
+package org.intellij.sdk.AIDemoPlugin;
 
 import com.google.gson.Gson;
 

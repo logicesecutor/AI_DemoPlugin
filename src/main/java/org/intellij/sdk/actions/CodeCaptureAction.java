@@ -1,15 +1,13 @@
 package org.intellij.sdk.actions;
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.DumbAwareAction;
-import org.intellij.sdk.toolWindow.AIDemoPlugin;
+import org.intellij.sdk.AIDemoPlugin.AIDemoPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.util.Objects;
 
 public class CodeCaptureAction extends DumbAwareAction {

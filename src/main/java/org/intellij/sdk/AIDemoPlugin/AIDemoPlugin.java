@@ -1,9 +1,7 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
-package org.intellij.sdk.toolWindow;
+package org.intellij.sdk.AIDemoPlugin;
 
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -11,6 +9,8 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.*;
 import com.intellij.ui.content.Content;
+
+import com.google.gson.stream.JsonReader;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -19,7 +19,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpClient;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.components.JBComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -28,7 +27,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.*;
 
-import static kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.string;
 
 
 public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
@@ -37,6 +35,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
   @Override
   public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+    // It is a Singleton pattern. This instance is needed to communicate with the CodeCaptureAction class.
     instance = this;
 
     toolWindowContent = new AIDemoPluginWindowContent(toolWindow);
@@ -45,21 +44,16 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     Content codeGenerationTab = contentManager.getFactory().createContent(toolWindowContent.getGenerationContentPanel(), "Code Generation", false);
     contentManager.addContent(codeGenerationTab);
 
-    /*Content dataVisualizerTab = contentManager.getFactory().createContent(toolWindowContent.getDataVisualizerContentPanel(), "Data Visualizer", false);
-    contentManager.addContent(dataVisualizerTab);
-     */
-
     Content feedbackPane = contentManager.getFactory().createContent(toolWindowContent.getFeedbackContentPanel(), "Data Visualizer", false);
     contentManager.addContent(feedbackPane);
 
+    // TODO: implement Data visualization panel
+    /*Content dataVisualizerTab = contentManager.getFactory().createContent(toolWindowContent.getDataVisualizerContentPanel(), "Data Visualizer", false);
+    contentManager.addContent(dataVisualizerTab);
+     */
   }
 
-  public static AIDemoPlugin getInstance(){
-    return instance;
-  }
-  public JBTextArea getGeneratedTextArea(){
-    return toolWindowContent.getCodeInsertionTextArea();
-  }
+
 
   private static class AIDemoPluginWindowContent {
     private final JPanel generationContentPanel;
@@ -67,30 +61,36 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     //private final JPanel dataVisualizerContentPanel;
     private static JBTextArea codeInsertionTextArea;
     private static JBTextArea generatedTextArea;
-    public static String API_KEY = "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";
-    public static String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-7b-hf";
+
+    //TODO: Add this API parameter to a settings file or make them a User choice
+    public static String API_KEY;
+    public static String API_URL;
+    public static String userDataPath;
+
     private final ArrayList<UserFeedBackObject> userData;
     private static HttpClient httpClient;
 
-    public JBTextArea getCodeInsertionTextArea() {
-      return codeInsertionTextArea;
-    }
-
-    public HttpRequest buildNewHttpRequest(String API_KEY, String API_URL, String json){
-
-      return HttpRequest.newBuilder()
-              .uri(URI.create(API_URL))
-              .timeout(Duration.ofMinutes(2))
-              .header("Content-Type", "application/json")
-              .header("Authorization", "Bearer "+ API_KEY)
-              .POST(HttpRequest.BodyPublishers.ofString(json))
-              .build();
-    }
 
     public AIDemoPluginWindowContent(ToolWindow toolWindow) {
 
+      // Get Properties
+      Properties currConfigProperties = new Properties();
+        InputStream fileStream = getClass().getClassLoader().getResourceAsStream("config.properties");
+        try {
+            currConfigProperties.load(fileStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+      API_KEY = currConfigProperties.getProperty("API_KEY");
+      API_URL = currConfigProperties.getProperty("API_URL");
+      userDataPath = currConfigProperties.getProperty("USER_DATA_PATH");
+
       httpClient = HttpClient.newHttpClient();
-      userData = readUserDataJsonFromFile("D:\\Projects\\AIDocGenerator\\src\\main\\resources\\toolWindow\\userData.json");
+
+
+      // Json simple Database Reading at the start of the plugin
+      userData = readUserDataJsonFromFile(userDataPath);
 
       // CodeInsertion Text Area
       codeInsertionTextArea = new JBTextArea();
@@ -104,6 +104,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       generatedTextArea.getEmptyText().setText("Waiting for to Generation input");
       generatedTextArea.setPreferredSize(new Dimension(400, 200));
 
+
       generationContentPanel = new JPanel();
       generationContentPanel.setLayout(new BorderLayout(50, 20));
       generationContentPanel.add(createGenerationControlsPanel(toolWindow), BorderLayout.CENTER);
@@ -112,14 +113,12 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       feedbackContentPanel.setLayout(new BorderLayout(50, 20));
       feedbackContentPanel.add(createFeedbackControlsPanel(toolWindow), BorderLayout.CENTER);
 
-
       /*
       dataVisualizerContentPanel = new JPanel();
       dataVisualizerContentPanel.setLayout(new BorderLayout(50, 20));
       dataVisualizerContentPanel.add(createDataVisualizerControlsPanel(toolWindow), BorderLayout.CENTER);
        */
     }
-
 
 
     @NotNull
@@ -169,7 +168,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
                       response_string = response_string.replace("[", "");
                       response_string = response_string.replace("]", "");
 
-                      System.out.println(string);
+                      System.out.println(response_string);
 
                       ResponseBodyObject obj = new Gson().fromJson(response_string, ResponseBodyObject.class);
                       SwingUtilities.invokeLater(() -> {
@@ -179,7 +178,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
                     }
                     else {
                       SwingUtilities.invokeLater(() -> {
-                        generatedTextArea.setText("The model is loading. It will be ready in a moment.");
+                        generatedTextArea.getEmptyText().setText("The model is loading. It will be ready in a moment.");
                         toolWindow.getContentManager().setSelectedContent(toolWindow.getContentManager().findContent("Data Visualizer"));
                       });
                     }
@@ -215,8 +214,13 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
 
       // Score questions Panel
+      String[] scoreQuestions = {
+              "How would you rate the clarity of the documentation?                    ",
+              "How would you rate the overall writing style of the documentation?      ",
+              "How satisfied are you with the generated documentation?                 "
+      };
       ArrayList<ComboBox<String>> comboBoxes = new ArrayList<>();
-      JPanel scoreChoicePanel = createScoreBoxComponent(comboBoxes);
+      JPanel scoreChoicePanel = createScoreBoxComponent(comboBoxes, scoreQuestions);
 
       constraints.gridx = 0;
       constraints.gridy = 1; // Start from the second row
@@ -227,8 +231,13 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
 
       // Check Boxes Panel
+      String[] checkQuestions = {
+              "The generated text describe the code's functionality and purpose",
+              "The generated text is coherent with the code",
+              "Ciao3",
+      };
       ArrayList<JBCheckBox> checkBoxes = new ArrayList<>();
-      JPanel checkboxesPanel = createCheckBoxComponent(checkBoxes);
+      JPanel checkboxesPanel = createCheckBoxComponent(checkBoxes, checkQuestions);
 
       constraints.gridx = 0;
       constraints.gridy = 2; // Start from the second row
@@ -257,6 +266,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
       JButton submitButton = new JButton("Submit");
       submitButton.addActionListener((event)->{
+        // Retrieve all the User Inputs
         String input_text = codeInsertionTextArea.getText();
         String generatedTextAreaText_text = generatedTextArea.getText();
         String fed_text = feedBackTextArea.getText();
@@ -265,23 +275,26 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
         // if those fields are not empty we can parse the feedback form
         if(!input_text.isEmpty() && !generatedTextAreaText_text.isEmpty()){
-          /*for(JBCheckBox cb : checkBoxes){
-
+          Map<String, Boolean> questionsCheckBoxResults = new HashMap<>();
+          for (int i = 0; i < checkQuestions.length; i++) {
+            questionsCheckBoxResults.put(checkQuestions[i], checkBoxes.get(i).isSelected());
           }
 
-          for(ComboBox<String> cb : comboBoxes){
-
+          Map<String, Integer> questionsScoreResults = new HashMap<>();
+          for (int i = 0; i < scoreQuestions.length; i++) {
+            questionsScoreResults.put(scoreQuestions[i], Integer.valueOf(comboBoxes.get(i).getItem()));
           }
-          saveJsonToFile
-           */
 
           UserFeedBackObject ufo = new UserFeedBackObject(
                   input_text,
                   generatedTextAreaText_text,
-                  (fed_text.isEmpty())?"":fed_text
+                  (fed_text.isEmpty()) ? "" : fed_text,
+                  questionsScoreResults,
+                  questionsCheckBoxResults
           );
+
           userData.add(ufo);
-          saveUserDataJsonToFile(userData, "D:\\Projects\\AIDocGenerator\\src\\main\\resources\\toolWindow\\userData.json");
+          saveUserDataJsonToFile(userData, userDataPath);
         }
 
       });
@@ -301,12 +314,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
     // Utils =================================================================
 
-    private JPanel createScoreBoxComponent(ArrayList<ComboBox<String>> comboBoxes){
-      String[] scoreQuestions = {
-              "How would you rate the clarity of the documentation?                    ",
-              "How would you rate the overall writing style of the documentation?      ",
-              "How satisfied are you with the generated documentation?                 "
-      };
+    private JPanel createScoreBoxComponent(ArrayList<ComboBox<String>> comboBoxes, String[] scoreQuestions){
 
       JPanel scoreChoicePanel = new JPanel(new GridLayout(scoreQuestions.length, 1, 5, 5));
       scoreChoicePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -323,13 +331,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     }
 
 
-    private JPanel createCheckBoxComponent(ArrayList<JBCheckBox> checkBoxes){
-      String[] checkQuestions = {
-              "The generated text describe the code's functionality and purpose",
-              "The generated text is coherent with the code",
-              "Ciao3",
-              "Ciao4",
-      };
+    private JPanel createCheckBoxComponent(ArrayList<JBCheckBox> checkBoxes, String[] checkQuestions){
 
       JPanel checkboxesPanel = new JPanel(new GridLayout(2, 2, 5, 5));
       checkboxesPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -342,6 +344,24 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
       return checkboxesPanel;
     }
+
+
+    public HttpRequest buildNewHttpRequest(String API_KEY, String API_URL, String json){
+
+      return HttpRequest.newBuilder()
+              .uri(URI.create(API_URL))
+              .timeout(Duration.ofMinutes(2))
+              .header("Content-Type", "application/json")
+              .header("Authorization", "Bearer "+ API_KEY)
+              .POST(HttpRequest.BodyPublishers.ofString(json))
+              .build();
+    }
+
+
+    public JBTextArea getCodeInsertionTextArea() {
+      return codeInsertionTextArea;
+    }
+
 
     private JPanel createLabeledComponent(JComponent component, String label){
       JPanel labeledTextArea = new JPanel(new BorderLayout(10,10));
@@ -358,10 +378,12 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
       return labeledTextArea;
     }
+
     private ComboBox<String> createDropDownList(String[] options){
       ComboBox<String> dropdownList = new ComboBox<String>(new DefaultComboBoxModel<>(options));
       return dropdownList;
     }
+
     private JPanel createDataVisualizerControlsPanel(ToolWindow toolWindow) {
       return new JPanel();
     }
@@ -415,5 +437,13 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       return null;
     }
 
+  }
+
+  public static AIDemoPlugin getInstance(){
+    return instance;
+  }
+
+  public JBTextArea getGeneratedTextArea(){
+    return toolWindowContent.getCodeInsertionTextArea();
   }
 }

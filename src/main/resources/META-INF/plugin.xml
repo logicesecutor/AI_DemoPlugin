@@ -1,23 +1,22 @@
 <!-- Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 
 <idea-plugin>
 
   <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
-  <id>org.intellij.sdk.toolWindow</id>
+  <id>org.intellij.sdk.AIDemoPlugin.AIDemoPlugin</id>
 
   <!-- Text to display as name on Settings | Plugin page -->
-  <name>SDK: Tool Window Sample</name>
+  <name>AI Documentation Sample</name>
 
   <!-- Indicate this plugin can be loaded in all IntelliJ Platform-based products. -->
   <depends>com.intellij.modules.platform</depends>
-  <!--idea-version since-build="232.8660.185"/-->
+
   <!-- Text to display as description on Settings | Plugin page -->
   <description>
     <![CDATA[
-      This sample plugin illustrates how to create your custom tool window.<br>
-      See the
-      <a href="https://plugins.jetbrains.com/docs/intellij/tool-windows.html">Tool Windows</a>
+      This plugin allow to generate code documentation in an easy manner.
+      You can also provide some feedback to the generated Text to further improve the generation process.
+      <a href="https://github.com/logicesecutor/AI_DemoPlugin">AI Demo Plugin</a>
       for more information.
     ]]>
   </description>
@@ -31,16 +30,16 @@
   </change-notes>
 
   <!-- Text to display as company information on Settings | Plugin page -->
-  <vendor url="https://plugins.jetbrains.com">IntelliJ Platform SDK</vendor>
+  <vendor url="https://github.com/logicesecutor/AI_DemoPlugin">LogicEsecutor GitHub</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="Demo Plugins" secondary="true" icon="AllIcons.Toolwindows.WebToolWindow" anchor="right"
-                factoryClass="org.intellij.sdk.toolWindow.AIDemoPlugin"/>
+                factoryClass="org.intellij.sdk.AIDemoPlugin.AIDemoPlugin"/>
   </extensions>
 
   <actions>
-    <action id="org.intellij.sdk.toolWindow.CodeCaptureAction" class="org.intellij.sdk.actions.CodeCaptureAction"
-            text="AI Generate Tool: Capture Code" description="Capture the selected Code to generate documentation">>
+    <action id="org.intellij.sdk.AIDemoPlugin.CodeCaptureAction" class="org.intellij.sdk.actions.CodeCaptureAction"
+            text="AI Generate Tool: Capture Code" description="Capture the selected Code to generate documentation" icon="AllIcons.General.Add">
       <add-to-group group-id="EditorPopupMenu" anchor="first"/>
     </action>
   </actions>
