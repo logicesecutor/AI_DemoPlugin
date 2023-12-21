@@ -36,9 +36,9 @@ Once clicked we are presented with the main panel. Here you can put your code us
 
 Indeed, it is possible to select a portion of the code and capture it with the newly available option in the Contextual Pop-Up menu.
 
-<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/capturing.png" alt="Capturing the Code" width="800"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/caputuring.png" alt="Capturing the Code" width="800"/>
 
-<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/captured.png" alt="Code Captured" width="800"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/captured.png" alt="Code Captured" width="800"/>
 
 Once we have the code in the box we can generate the documentation.
 When we receive a response from the servers, the plugin captures the answer and automatically switches to the feedback panel.
