@@ -28,7 +28,7 @@ The new plugin button is located on the bottom right side of the screen.
 
 Once clicked we are presented with the main panel. Here you can put your code using three methods:
 
-<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/mainPanel.png" alt="Position" width="800"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/mainPanel.png" alt="Main Panel" width="800"/>
 
 1. Copy/paste;
 2. Writing the code;
@@ -62,7 +62,7 @@ Sometimes, often the first one, the model needs to be loaded by the HuggingFace 
 
 
 ## Configuration file (config.properties)
-There is a configuration file where is possible to customize some important variables.
+There is a [configuration](https://github.com/logicesecutor/AI_DemoPlugin/blob/master/src/main/resources/config.properties) file where is possible to customize some important variables.
 - API_KEY: This is the personal token given by HuggingFace to make REST queries. MUST BE CHANGED!
 - API_URL: This is the URL of the model that we use for the text generation. This can be changed if needed.
 - PROJECT_DATA_PATH: path to the Project to locate the JSON file where to save all the data. MUST BE CHANGED!
