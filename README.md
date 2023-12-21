@@ -8,13 +8,13 @@ Moreover, the User can give some feedback to improve the quality of generated te
 ## Installation
 Download or clone the Repository.
 Open the project with IntelliJ IDEA. Gradle should automatically build the plugin and install the needed dependencies.
-During this step, a .zip file will be generated under the folder [folder build](https://processing.org/reference).
+During this step, a .zip file will be generated under the folder build.
 
 To try it run "runPlugin" in the run box.
 
 To permanently install the package follow the steps:
-- Open Settings (CTRL + ALT + S)
-- Go under "Plugins"
+- Open Settings (CTRL + ALT + S);
+- Go under "Plugins";
 - Click on the gear and select Install manually.
 
 You should select the generated tool_window.zip file. It is done, you have installed your new Plugin.
@@ -56,7 +56,7 @@ Sometimes, often the first one, the model needs to be loaded by the HuggingFace 
 There is a configuration file where is possible to customize some important variables.
 - API_KEY: This is the personal token given by HuggingFace to make REST queries. MUST BE CHANGED!
 - API_URL: This is the URL of the model that we use for the text generation. This can be changed if needed.
-- USER_DATA_PATH: path to the JSON file where to save all the data. MUST BE CHANGED!
+- PROJECT_DATA_PATH: path to the Project to locate the JSON file where to save all the data. MUST BE CHANGED!
 
 
 ## Improvements
