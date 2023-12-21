@@ -18,14 +18,16 @@ To permanently install the package follow the steps:
 - Click on the gear and select Install manually.
 
 You should select the generated tool_window.zip file. It is done, you have installed your new Plugin.
+
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin" width="200"/>
 
 ## How to Use It
 The new plugin button is located on the bottom right side of the screen.
-https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images
+
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/pluginPosition.png" alt="Position" width="800"/>
 
 Once clicked we are presented with the main panel. Here you can put your code using three methods:
+
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/mainPanel.png" alt="Position" width="800"/>
 
 1. Copy/paste;
@@ -35,6 +37,7 @@ Once clicked we are presented with the main panel. Here you can put your code us
 Indeed, it is possible to select a portion of the code and capture it with the newly available option in the Contextual Pop-Up menu.
 
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/capturing.png" alt="Capturing the Code" width="800"/>
+
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/captured.png" alt="Code Captured" width="800"/>
 
 Once we have the code in the box we can generate the documentation.
@@ -45,7 +48,7 @@ Here we can provide three kinds of Human feedback:
 - A yes/no type of feedback;
 - A textual type of feedback to give more context to the model and further improve the generation.
 
-<img src="https://github.com/logicesecutor/RayCasting/blob/main/src/final_results.gif" alt="FeedBack Panel the Code" width="800"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/feedBackPanel.png" alt="FeedBack Panel the Code" width="800"/>
   
 All the collected data are then saved to a JSON file ready to be in an API-friendly format. 
 
@@ -54,6 +57,7 @@ For the text generation, I have chosen a LLama 7B finetuned for code generation.
 
 **Note!**
 Sometimes, often the first one, the model needs to be loaded by the HuggingFace servers, consequently it is not always ready and we need to wait for 1 minute.
+
 <img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/modelLoading.png" alt="Model Loading" width="400"/>
 
 
