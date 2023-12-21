@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tool_window.iml" filepath="$PROJECT_DIR$/.idea/modules/tool_window.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tool_window.main.iml" filepath="$PROJECT_DIR$/.idea/modules/tool_window.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tool_window.test.iml" filepath="$PROJECT_DIR$/.idea/modules/tool_window.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AIDemoPlugin.iml" filepath="$PROJECT_DIR$/.idea/modules/AIDemoPlugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AIDemoPlugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/AIDemoPlugin.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AIDemoPlugin.test.iml" filepath="$PROJECT_DIR$/.idea/modules/AIDemoPlugin.test.iml" />
     </modules>
   </component>
 </project>

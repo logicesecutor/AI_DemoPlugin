@@ -84,7 +84,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
       API_KEY = currConfigProperties.getProperty("API_KEY");
       API_URL = currConfigProperties.getProperty("API_URL");
-      userDataPath = currConfigProperties.getProperty("PROJECT_DATA_PATH") + "AIDocGenerator/src/main/resources/toolWindow/userData.json";
+      userDataPath = currConfigProperties.getProperty("PROJECT_DATA_PATH") + "src/main/resources/toolWindow/userData.json";
 
       httpClient = HttpClient.newHttpClient();
 
@@ -234,7 +234,6 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       String[] checkQuestions = {
               "The generated text describe the code's functionality and purpose",
               "The generated text is coherent with the code",
-              "Ciao3",
       };
       ArrayList<JBCheckBox> checkBoxes = new ArrayList<>();
       JPanel checkboxesPanel = createCheckBoxComponent(checkBoxes, checkQuestions);
@@ -333,7 +332,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
     private JPanel createCheckBoxComponent(ArrayList<JBCheckBox> checkBoxes, String[] checkQuestions){
 
-      JPanel checkboxesPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+      JPanel checkboxesPanel = new JPanel(new GridLayout(2, 1, 5, 5));
       checkboxesPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
       for (int i = 0; i < checkQuestions.length; i++) {
