@@ -8,18 +8,18 @@ Moreover, the User can give some feedback to improve the quality of generated te
 ## Installation
 Download or clone the Repository.
 Open the project with IntelliJ IDEA. Gradle should automatically build the plugin and install the needed dependencies.
-During this step, a .zip file will be generated under the folder build.
+Run the Gradle configuration "build plugin". During this step, the file "AIDemoPlugin-2.0.0.zip" will be generated under the folder build -> distribution.
 
 To try it run "runPlugin" in the run box.
+
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin" width="400"/>
 
 To permanently install the package follow the steps:
 - Open Settings (CTRL + ALT + S);
 - Go under "Plugins";
 - Click on the gear and select Install manually.
 
-You should select the generated tool_window.zip file. It is done, you have installed your new Plugin.
-
-<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin" width="400"/>
+You should select the generated "AIDemoPlugin-2.0.0.zip" file. It is done, you have installed your new Plugin.
 
 
 ## How to Use It
