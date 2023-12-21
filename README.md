@@ -25,7 +25,7 @@ You should select the generated tool_window.zip file. It is done, you have insta
 ## How to Use It
 The new plugin button is located on the bottom right side of the screen.
 
-<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/pluginPosition.png" alt="Position" width="400"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/pluginPosition.png" alt="Position"/>
 
 Once clicked we are presented with the main panel. Here you can put your code using three methods:
 
