@@ -69,8 +69,13 @@ There is a configuration file where is possible to customize some important vari
 
 
 ## Improvements
-Clearly, a lot of improvements need to be made.
-Improve the general User Experience
+A lot of improvements need to be made.
+
+- Improve the general User Experience
+- Give more feedback and add loading components
+- Clear the output
+- Visualize the collected data
+- Code completion in the Input box
 
 
 
