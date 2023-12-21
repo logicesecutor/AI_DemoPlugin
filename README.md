@@ -54,7 +54,7 @@ Here we can provide three kinds of Human feedback:
 All the collected data are then saved to a JSON file ready to be in an API-friendly format. 
 
 ## The Model
-For the text generation, I have chosen a LLama 7B finetuned for code generation.
+For the text generation, I have chosen a [CodeLlama 7b-hf](https://huggingface.co/codellama/CodeLlama-7b-hf) finetuned for code generation.
 
 **Note!**
 Sometimes, often the first one, the model needs to be loaded by the HuggingFace servers, consequently it is not always ready and we need to wait for 1 minute.
