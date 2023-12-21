@@ -18,20 +18,24 @@ To permanently install the package follow the steps:
 - Click on the gear and select Install manually.
 
 You should select the generated tool_window.zip file. It is done, you have installed your new Plugin.
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin" width="200"/>
 
 ## How to Use It
 The new plugin button is located on the bottom right side of the screen.
-
-<img src="https://github.com/logicesecutor/RayCasting/blob/main/src/final_results.gif" alt="Working Algorithm" width="800"/>
+https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/pluginPosition.png" alt="Position" width="800"/>
 
 Once clicked we are presented with the main panel. Here you can put your code using three methods:
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/mainPanel.png" alt="Position" width="800"/>
+
 1. Copy/paste;
 2. Writing the code;
 3. We can capture the code directly from the IDE.
 
 Indeed, it is possible to select a portion of the code and capture it with the newly available option in the Contextual Pop-Up menu.
 
-<img src="https://github.com/logicesecutor/RayCasting/blob/main/src/final_results.gif" alt="Capturin the Code" width="800"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/capturing.png" alt="Capturing the Code" width="800"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/tree/master/Images/captured.png" alt="Code Captured" width="800"/>
 
 Once we have the code in the box we can generate the documentation.
 When we receive a response from the servers, the plugin captures the answer and automatically switches to the feedback panel.
@@ -50,6 +54,7 @@ For the text generation, I have chosen a LLama 7B finetuned for code generation.
 
 **Note!**
 Sometimes, often the first one, the model needs to be loaded by the HuggingFace servers, consequently it is not always ready and we need to wait for 1 minute.
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/modelLoading.png" alt="Model Loading" width="400"/>
 
 
 ## Configuration file (config.properties)
@@ -61,6 +66,7 @@ There is a configuration file where is possible to customize some important vari
 
 ## Improvements
 Clearly, a lot of improvements need to be made.
+Improve the general User Experience
 
 
 
