@@ -1,6 +1,9 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.sdk.toolWindow;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -10,11 +13,13 @@ import com.intellij.ui.components.*;
 import com.intellij.ui.content.Content;
 import com.google.gson.Gson;
 
+import java.io.*;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpClient;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.components.JBComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -22,6 +27,8 @@ import java.awt.*;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.*;
+
+import static kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.string;
 
 
 public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
@@ -62,7 +69,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     private static JBTextArea generatedTextArea;
     public static String API_KEY = "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";
     public static String API_URL = "https://api-inference.huggingface.co/models/codellama/CodeLlama-7b-hf";
-
+    private final ArrayList<UserFeedBackObject> userData;
     private static HttpClient httpClient;
 
     public JBTextArea getCodeInsertionTextArea() {
@@ -83,6 +90,7 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     public AIDemoPluginWindowContent(ToolWindow toolWindow) {
 
       httpClient = HttpClient.newHttpClient();
+      userData = readUserDataJsonFromFile("D:\\Projects\\AIDocGenerator\\src\\main\\resources\\toolWindow\\userData.json");
 
       // CodeInsertion Text Area
       codeInsertionTextArea = new JBTextArea();
@@ -103,9 +111,6 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       feedbackContentPanel = new JPanel();
       feedbackContentPanel.setLayout(new BorderLayout(50, 20));
       feedbackContentPanel.add(createFeedbackControlsPanel(toolWindow), BorderLayout.CENTER);
-
-
-
 
 
       /*
@@ -136,13 +141,6 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
       return controlsPanel;
     }
 
-    private JPanel createLabeledComponent(JComponent component, String label){
-      JPanel labeledTextArea = new JPanel(new BorderLayout(10,10));
-      labeledTextArea.add(new JBLabel(label), BorderLayout.NORTH);
-      labeledTextArea.add(component, BorderLayout.CENTER);
-
-      return labeledTextArea;
-    }
 
     @NotNull
     private JButton getGenerationButton(ToolWindow toolWindow, JBTextArea codeInsertionTextArea, JBTextArea generatedTextArea) {
@@ -165,22 +163,31 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
 
           httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                   .thenApply(HttpResponse::body)
-                  .thenAccept(string -> {
-                    string = string.replace("[", "");
-                    string = string.replace("]", "");
+                  .thenAccept(response_string -> {
 
-                    System.out.println(string);
+                    if(!response_string.contains("error")) {
+                      response_string = response_string.replace("[", "");
+                      response_string = response_string.replace("]", "");
 
-                    ResponseBodyObject obj = new Gson().fromJson(string, ResponseBodyObject.class);
-                    SwingUtilities.invokeLater(() -> {
-                      generatedTextArea.setText(obj.generated_text);
-                      toolWindow.getContentManager().setSelectedContent(toolWindow.getContentManager().findContent("Data Visualizer"));
-                    });
+                      System.out.println(string);
+
+                      ResponseBodyObject obj = new Gson().fromJson(response_string, ResponseBodyObject.class);
+                      SwingUtilities.invokeLater(() -> {
+                        generatedTextArea.setText(obj.generated_text);
+                        toolWindow.getContentManager().setSelectedContent(toolWindow.getContentManager().findContent("Data Visualizer"));
+                      });
+                    }
+                    else {
+                      SwingUtilities.invokeLater(() -> {
+                        generatedTextArea.setText("The model is loading. It will be ready in a moment.");
+                        toolWindow.getContentManager().setSelectedContent(toolWindow.getContentManager().findContent("Data Visualizer"));
+                      });
+                    }
 
                   });
 
         }else{
-          SwingUtilities.invokeLater(() -> generatedTextArea.setText("No The string was Empty"));
+          SwingUtilities.invokeLater(() -> generatedTextArea.getEmptyText().setText("No code was provided. We can not generate documentation"));
         }
       });
 
@@ -188,80 +195,173 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     }
 
 
-    private JPanel createFeedbackControlsPanel(ToolWindow toolWindow) {
+    private JComponent createFeedbackControlsPanel(ToolWindow toolWindow) {
 
-      JPanel controlsPanel = new JPanel( new BorderLayout() );
-      //GridBagConstraints constraints = new GridBagConstraints();
-      //constraints.fill = GridBagConstraints.HORIZONTAL;
+      JPanel panel = new JPanel(new GridBagLayout());
+      GridBagConstraints constraints = new GridBagConstraints();
+      constraints.fill = GridBagConstraints.HORIZONTAL;
 
+      // Text area
       JPanel labeledGeneratedTextArea = createLabeledComponent(generatedTextArea, "Model output:");
       JBScrollPane scroller_generatedTextArea = new JBScrollPane(labeledGeneratedTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-      //scroller_generatedTextArea.setPreferredSize(new Dimension(400, 200));
 
-
-      JButton submitButton = new JButton("Submit");
-
-
-      controlsPanel.add(scroller_generatedTextArea, BorderLayout.CENTER);
-      controlsPanel.add(submitButton, BorderLayout.SOUTH);
-
-      return controlsPanel;
-
-      /*constraints.gridx = 0;
-      constraints.gridy = 0;
-      constraints.gridwidth = 6;
-      controlsPanel.add(scroller_generatedTextArea, constraints);
-
-      ArrayList<JBCheckBox> checkBoxes = new ArrayList<>();
-      // Checkbox
-      for (int i = 0; i < 5; i++) {
-        JBCheckBox checkBox = new JBCheckBox("Checkbox " + (i + 1));
-        constraints.gridx = i;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        controlsPanel.add(checkBox, constraints);
-        checkBoxes.add(checkBox);
-      }
-
-      // TextArea
-      JBTextArea feedBackTextArea = new JBTextArea();
-      feedBackTextArea.getEmptyText().setText("Give us your Feedback");
-      JBScrollPane scrollPane = new JBScrollPane(feedBackTextArea);
-      scrollPane.setPreferredSize(new Dimension(200, 100));
       constraints.gridx = 0;
-      constraints.gridy = 2;
-      constraints.gridwidth = 5;
-      constraints.ipady = 80; // set the height of the scroll pane
-      controlsPanel.add(scrollPane, constraints);
-
-      // Dropdown List
-      String[] options = {"Option 1", "Option 2", "Option 3"};
-      JBList<String> dropdownList = new JBList<>(options);
+      constraints.gridy = 0;
+      constraints.gridwidth = 2; // Span across two columns
+      constraints.weightx = 1.0; // Fill the entire width
+      constraints.weighty = 1.0; // Fill the entire height
+      constraints.insets = JBUI.insets(5); // Add some padding
+      panel.add(scroller_generatedTextArea, constraints);
 
 
-      // ScrollPane for the Dropdown List
-      JBScrollPane listScrollPane = new JBScrollPane(dropdownList);
-      listScrollPane.setPreferredSize(new Dimension(150, 100));
+      // Score questions Panel
+      ArrayList<ComboBox<String>> comboBoxes = new ArrayList<>();
+      JPanel scoreChoicePanel = createScoreBoxComponent(comboBoxes);
+
+      constraints.gridx = 0;
+      constraints.gridy = 1; // Start from the second row
+      constraints.gridwidth = 1; // Span only one column
+      constraints.weightx = 1.0; // Reset the weight for checkboxes
+      constraints.weighty = 0.0; // Reset the weight for checkboxes
+      panel.add(scoreChoicePanel, constraints);
+
+
+      // Check Boxes Panel
+      ArrayList<JBCheckBox> checkBoxes = new ArrayList<>();
+      JPanel checkboxesPanel = createCheckBoxComponent(checkBoxes);
+
+      constraints.gridx = 0;
+      constraints.gridy = 2; // Start from the second row
+      constraints.gridwidth = 1; // Span only one column
+      constraints.weightx = 0.5; // Reset the weight for checkboxes
+      constraints.weighty = 0.0; // Reset the weight for checkboxes
+      panel.add(checkboxesPanel, constraints);
+
+
+      // FeedBack TextArea
+      JBTextArea feedBackTextArea = new JBTextArea();
+      feedBackTextArea.getEmptyText().setText("Leave us your Feedback");
+      feedBackTextArea.setPreferredSize(new Dimension(400, 100));
+
+      JPanel labeled_feedBackTextArea = createLabeledComponent(feedBackTextArea, "Are there any features or information you would like to see added to enhance the documentation?");
+      JBScrollPane scroller_feedBackTextArea = new JBScrollPane(labeled_feedBackTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
       constraints.gridx = 0;
       constraints.gridy = 3;
-      constraints.gridwidth = 5;
-      controlsPanel.add(listScrollPane, constraints);
+      constraints.gridwidth = 2;
+      constraints.weightx = 1.0; // Fill the entire width
+      constraints.weighty = 1.0; // Fill the entire height
+      constraints.insets = JBUI.insets(5); // Add some padding
+      panel.add(scroller_feedBackTextArea, constraints);
 
 
+      JButton submitButton = new JButton("Submit");
+      submitButton.addActionListener((event)->{
+        String input_text = codeInsertionTextArea.getText();
+        String generatedTextAreaText_text = generatedTextArea.getText();
+        String fed_text = feedBackTextArea.getText();
 
-      constraints.gridx = 2; // Centered horizontally
+        System.out.println(!input_text.isEmpty() && !generatedTextAreaText_text.isEmpty());
+
+        // if those fields are not empty we can parse the feedback form
+        if(!input_text.isEmpty() && !generatedTextAreaText_text.isEmpty()){
+          /*for(JBCheckBox cb : checkBoxes){
+
+          }
+
+          for(ComboBox<String> cb : comboBoxes){
+
+          }
+          saveJsonToFile
+           */
+
+          UserFeedBackObject ufo = new UserFeedBackObject(
+                  input_text,
+                  generatedTextAreaText_text,
+                  (fed_text.isEmpty())?"":fed_text
+          );
+          userData.add(ufo);
+          saveUserDataJsonToFile(userData, "D:\\Projects\\AIDocGenerator\\src\\main\\resources\\toolWindow\\userData.json");
+        }
+
+      });
+
+      constraints.gridx = 0; // Centered horizontally
       constraints.gridy = 4; // Bottom row
-      constraints.gridwidth = 1;
-      constraints.ipady = 0; // Reset to default
-      constraints.insets = JBUI.insetsTop(10); // Add some top margin
-       */
+      constraints.gridwidth = 2; // Span across two columns
+      constraints.weightx = 0.0; // Reset the weight for the button
+      constraints.weighty = 1; // Reset the weight for the button
+      panel.add(submitButton, constraints);
 
 
-
-
+      return new JBScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     }
 
+
+
+    // Utils =================================================================
+
+    private JPanel createScoreBoxComponent(ArrayList<ComboBox<String>> comboBoxes){
+      String[] scoreQuestions = {
+              "How would you rate the clarity of the documentation?                    ",
+              "How would you rate the overall writing style of the documentation?      ",
+              "How satisfied are you with the generated documentation?                 "
+      };
+
+      JPanel scoreChoicePanel = new JPanel(new GridLayout(scoreQuestions.length, 1, 5, 5));
+      scoreChoicePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+      for (int i = 0; i < scoreQuestions.length; i++) {
+        String[] options = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        ComboBox<String> dropdownList = createDropDownList(options);
+        comboBoxes.add(dropdownList);
+        //dropdownList.setPreferredSize(new Dimension(50, 25));
+        scoreChoicePanel.add(createLabeledComponent(dropdownList, scoreQuestions[i], BorderLayout.WEST));
+      }
+
+      return scoreChoicePanel;
+    }
+
+
+    private JPanel createCheckBoxComponent(ArrayList<JBCheckBox> checkBoxes){
+      String[] checkQuestions = {
+              "The generated text describe the code's functionality and purpose",
+              "The generated text is coherent with the code",
+              "Ciao3",
+              "Ciao4",
+      };
+
+      JPanel checkboxesPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+      checkboxesPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+      for (int i = 0; i < checkQuestions.length; i++) {
+        JBCheckBox cb = new JBCheckBox(checkQuestions[i]);
+        checkBoxes.add(cb);
+        checkboxesPanel.add(cb);
+      }
+
+      return checkboxesPanel;
+    }
+
+    private JPanel createLabeledComponent(JComponent component, String label){
+      JPanel labeledTextArea = new JPanel(new BorderLayout(10,10));
+      labeledTextArea.add(new JBLabel(label), BorderLayout.NORTH);
+      labeledTextArea.add(component, BorderLayout.CENTER);
+
+      return labeledTextArea;
+    }
+
+    private JPanel createLabeledComponent(JComponent component, String label, String position){
+      JPanel labeledTextArea = new JPanel(new BorderLayout(10,10));
+      labeledTextArea.add(new JBLabel(label), position);
+      labeledTextArea.add(component, BorderLayout.CENTER);
+
+      return labeledTextArea;
+    }
+    private ComboBox<String> createDropDownList(String[] options){
+      ComboBox<String> dropdownList = new ComboBox<String>(new DefaultComboBoxModel<>(options));
+      return dropdownList;
+    }
     private JPanel createDataVisualizerControlsPanel(ToolWindow toolWindow) {
       return new JPanel();
     }
@@ -277,5 +377,43 @@ public final class AIDemoPlugin implements ToolWindowFactory, DumbAware {
     public JPanel getDataVisualizerContentPanel() {
       return new JPanel();
     }
+
+
+    private static void saveUserDataJsonToFile(ArrayList<UserFeedBackObject> ufos, String filePath) {
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+      try (FileWriter fileWriter = new FileWriter(filePath)) {
+        gson.toJson(ufos.toArray(), fileWriter);
+        fileWriter.close();
+
+        // Write the JSON string to the file
+        System.out.println("Object saved to file: " + filePath);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    private static ArrayList<UserFeedBackObject> readUserDataJsonFromFile(String filePath) {
+
+      try (BufferedReader fileReader = new BufferedReader(new FileReader(filePath))) {
+
+        JsonReader reader = new JsonReader(fileReader);
+        UserFeedBackObject[] ufos = new Gson().fromJson(reader, UserFeedBackObject[].class);
+        fileReader.close();
+
+        // Write the JSON string to the file
+        System.out.println("Object loaded from: " + filePath);
+
+        return (ufos!=null)? new ArrayList<UserFeedBackObject>(Arrays.asList(ufos)) : new ArrayList<UserFeedBackObject>();
+
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      return null;
+    }
+
   }
 }
