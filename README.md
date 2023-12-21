@@ -19,7 +19,7 @@ To permanently install the package follow the steps:
 
 You should select the generated tool_window.zip file. It is done, you have installed your new Plugin.
 
-<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin" width="200"/>
+<img src="https://github.com/logicesecutor/AI_DemoPlugin/blob/master/Images/runPlugin.png" alt="Run plugin"/>
 
 ## How to Use It
 The new plugin button is located on the bottom right side of the screen.
