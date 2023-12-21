@@ -6,9 +6,9 @@ The application now allows the user to write a piece of code or select an existi
 Moreover, the User can give some feedback to improve the quality of generated text!
 
 ## Installation
-Download or clone the Repository.
-Open the project with IntelliJ IDEA. Gradle should automatically build the plugin and install the needed dependencies.
-Run the Gradle configuration "build plugin". During this step, the file "AIDemoPlugin-2.0.0.zip" will be generated under the folder build -> distribution.
+1. Download or clone the Repository.
+2. Open the project with IntelliJ IDEA. Gradle should automatically build the plugin and install the needed dependencies.
+3. Run the Gradle configuration "build plugin". During this step, the file "AIDemoPlugin-2.0.0.zip" will be generated under the folder build -> distribution.
 
 To try it run "runPlugin" in the run box.
 
