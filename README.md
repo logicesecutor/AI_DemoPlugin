@@ -25,9 +25,9 @@ The new plugin button is located on the bottom right side of the screen.
 <img src="https://github.com/logicesecutor/RayCasting/blob/main/src/final_results.gif" alt="Working Algorithm" width="800"/>
 
 Once clicked we are presented with the main panel. Here you can put your code using three methods:
-- Copy/paste.
-- Writing the code.
-- We can capture the code directly from the IDE.
+1. Copy/paste;
+2. Writing the code;
+3. We can capture the code directly from the IDE.
 
 Indeed, it is possible to select a portion of the code and capture it with the newly available option in the Contextual Pop-Up menu.
 
@@ -57,8 +57,6 @@ There is a configuration file where is possible to customize some important vari
 - API_KEY: This is the personal token given by HuggingFace to make REST queries. MUST BE CHANGED!
 - API_URL: This is the URL of the model that we use for the text generation. This can be changed if needed.
 - USER_DATA_PATH: path to the JSON file where to save all the data. MUST BE CHANGED!
-
-
 
 
 ## Improvements
